@@ -1,0 +1,70 @@
+services:
+  postgres:
+    container_name: ryg-postgres-container
+    env_file:
+      - .env
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_DB_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB_NAME}
+    ports:
+      - ${POSTGRES_DB_PORT}:${POSTGRES_DB_PORT}
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+  rabbitmq:
+    container_name: ryg-rabbitmq-container
+    env_file:
+      - .env
+    image: rabbitmq:3-management-alpine
+    ports:
+      - ${RABBITMQ_PORT}:${RABBITMQ_PORT}
+      - ${RABBITMQ_MANAGEMENT_PORT}:${RABBITMQ_MANAGEMENT_PORT}
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - ./rabbitmq_data:/var/lib/rabbitmq
+  ryg-user-service:
+    container_name: ryg-user-service
+    env_file:
+      - .env
+    image: javokhirakramjonov/ryg-user-service:latest
+    ports:
+      - ${RYG_USER_SERVICE_PORT}:${RYG_USER_SERVICE_PORT}
+    depends_on:
+      - postgres
+      - rabbitmq
+  ryg-email-service:
+    container_name: ryg-email-service
+    env_file:
+      - .env
+    image: javokhirakramjonov/ryg-email-service:latest
+    ports:
+      - ${RYG_EMAIL_SERVICE_PORT}:${RYG_EMAIL_SERVICE_PORT}
+    depends_on:
+      - rabbitmq
+  ryg-task-service:
+    container_name: ryg-task-service
+    env_file:
+      - .env
+    image: javokhirakramjonov/ryg-task-service:latest
+    ports:
+      - ${RYG_TASK_SERVICE_PORT}:${RYG_TASK_SERVICE_PORT}
+    depends_on:
+      - postgres
+  ryg-api-gateway:
+    container_name: ryg-api-gateway
+    env_file:
+      - .env
+    image: javokhirakramjonov/ryg-api-gateway:latest
+    ports:
+      - ${RYG_API_GATEWAY_PORT}:${RYG_API_GATEWAY_PORT}
+    depends_on:
+      - ryg-user-service
+      - ryg-email-service
+      - ryg-task-service
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
