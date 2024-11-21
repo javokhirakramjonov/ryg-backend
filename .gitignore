@@ -1,3 +1,6 @@
+postgres_data
+rabbitmq_data
+
 .idea/
 
 .env
