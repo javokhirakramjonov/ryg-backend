@@ -40,8 +40,6 @@ services:
     env_file:
       - .env
     image: javokhirakramjonov/ryg-email-service:latest
-    ports:
-      - ${RYG_EMAIL_SERVICE_PORT}:${RYG_EMAIL_SERVICE_PORT}
     depends_on:
       - rabbitmq
   ryg-task-service:
