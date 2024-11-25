@@ -11,7 +11,7 @@ services:
     ports:
       - ${POSTGRES_DB_PORT}:${POSTGRES_DB_PORT}
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
   rabbitmq:
     container_name: ryg-rabbitmq-container
     env_file:
@@ -24,7 +24,7 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     volumes:
-      - ./rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_data:/var/lib/rabbitmq
   ryg-user-service:
     container_name: ryg-user-service
     env_file:
@@ -51,6 +51,7 @@ services:
       - ${RYG_TASK_SERVICE_PORT}:${RYG_TASK_SERVICE_PORT}
     depends_on:
       - postgres
+      - rabbitmq
   ryg-api-gateway:
     container_name: ryg-api-gateway
     env_file:
